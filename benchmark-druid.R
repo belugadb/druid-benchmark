@@ -21,7 +21,8 @@ url <- druid.url(host)
 
 datasource <- "tpch_lineitem_small"
 engine <- "druid-benchmark.tsv"
-n <- 100
+number_of_execs=1
+n <- number_of_execs
 
 if(!is.na(args[2])) datasource <- args[2]
 if(!is.na(args[3])) engine <- args[3]
@@ -156,8 +157,8 @@ top_100_parts_details <- function(datasource) {
     aggregations = list(
       sum(metric("l_quantity")),
       sum(metric("l_extendedprice")),
-      min(metric("l_discount")),
-      max(metric("l_discount"))
+      druid.build.aggregation(type="longMin", name = "l_discount_min", fieldName = "l_discount"),
+      druid.build.aggregation(type="longMax", name = "l_discount_max", fieldName = "l_discount")
     ),
     filter = NULL,
     granularity = granularity("all"),
@@ -177,8 +178,8 @@ top_100_parts_filter <- function(datasource) {
     aggregations = list(
       sum(metric("l_quantity")),
       sum(metric("l_extendedprice")),
-      min(metric("l_discount")),
-      max(metric("l_discount"))
+      druid.build.aggregation(type="longMin", name = "l_discount_min", fieldName = "l_discount"),
+      druid.build.aggregation(type="longMax", name = "l_discount_max", fieldName = "l_discount")
     ),
     granularity = granularity("all"),
     context=list(useCache=F, populateCache=F)
@@ -202,15 +203,24 @@ top_100_commitdate <- function(datasource) {
   )
 }
 
-res1 <- microbenchmark(count_star_interval(datasource), times=n)
-res2 <- microbenchmark(sum_price(datasource), times=n)
-res3 <- microbenchmark(sum_all(datasource), times=n)
-res4 <- microbenchmark(sum_all_year(datasource), times=n)
-res5 <- microbenchmark(sum_all_filter(datasource), times=n)
-res6 <- microbenchmark(top_100_parts(datasource), times=n)
-res7 <- microbenchmark(top_100_parts_details(datasource), times=n)
-res8 <- microbenchmark(top_100_parts_filter(datasource), times=n)
-res9 <- microbenchmark(top_100_commitdate(datasource), times=n)
+res1 <- microbenchmark(count_star_interval(datasource), times=number_of_execs)
+cat("1\n")
+res2 <- microbenchmark(sum_price(datasource), times=number_of_execs)
+cat("2\n")
+res3 <- microbenchmark(sum_all(datasource), times=number_of_execs)
+cat("3\n")
+res4 <- microbenchmark(sum_all_year(datasource), times=number_of_execs)
+cat("4\n")
+res5 <- microbenchmark(sum_all_filter(datasource), times=number_of_execs)
+cat("5\n")
+res6 <- microbenchmark(top_100_parts(datasource), times=number_of_execs)
+cat("6\n")
+res7 <- microbenchmark(top_100_parts_details(datasource), times=number_of_execs)
+cat("7\n")
+res8 <- microbenchmark(top_100_parts_filter(datasource), times=number_of_execs)
+cat("8\n")
+res9 <- microbenchmark(top_100_commitdate(datasource), times=number_of_execs)
+cat("9\n")
 
 results <- as.data.frame(rbind(res1, res2, res3, res4, res5, res6, res7, res8, res9))
 results$time <- results$time / 1e9
