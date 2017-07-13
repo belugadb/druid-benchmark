@@ -1,0 +1,28 @@
+{
+  "queryType" : "timeseries",
+  "dataSource" : "tpch_lineitem_small",
+  "intervals" : ["1992-01-01T00:00:00/1999-01-01T00:00:00"],
+  "granularity" : "all",
+  "aggregations" : [
+    {
+      "type" : "longSum",
+      "name" : "l_extendedprice",
+      "fieldName" : "l_extendedprice"
+    },
+    {
+      "type" : "longSum",
+      "name" : "l_discount",
+      "fieldName" : "l_discount"
+    },
+    {
+      "type" : "longSum",
+      "name" : "l_quantity",
+      "fieldName" : "l_quantity"
+    },
+    {
+      "type" : "longSum",
+      "name" : "l_tax",
+      "fieldName" : "l_tax"
+    }
+  ]
+}
